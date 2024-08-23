@@ -1,0 +1,118 @@
+{
+  "project_info": {
+    "project_number": "1033205244616",
+    "project_id": "travel-journal-saathi",
+    "storage_bucket": "travel-journal-saathi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1033205244616:android:7c14bf39a267cd5067bbfd",
+        "android_client_info": {
+          "package_name": "com.example.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1033205244616-resd81p27m3esv6t027nibv6egv77uat.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaN8XxQpgX-R9NuZa9Ra7e2bwVgkyp-jo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1033205244616-resd81p27m3esv6t027nibv6egv77uat.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1033205244616-pdsekmts75m5auas3pv2nes14ga1c9r7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.travelJournal"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1033205244616:android:df5046fd62b7dad067bbfd",
+        "android_client_info": {
+          "package_name": "com.example.travel_journal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1033205244616-resd81p27m3esv6t027nibv6egv77uat.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaN8XxQpgX-R9NuZa9Ra7e2bwVgkyp-jo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1033205244616-resd81p27m3esv6t027nibv6egv77uat.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1033205244616-pdsekmts75m5auas3pv2nes14ga1c9r7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.travelJournal"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1033205244616:android:bcce2a5358eae0d967bbfd",
+        "android_client_info": {
+          "package_name": "in.crimsontwilight.tjournal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1033205244616-resd81p27m3esv6t027nibv6egv77uat.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaN8XxQpgX-R9NuZa9Ra7e2bwVgkyp-jo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1033205244616-resd81p27m3esv6t027nibv6egv77uat.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1033205244616-pdsekmts75m5auas3pv2nes14ga1c9r7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.travelJournal"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
