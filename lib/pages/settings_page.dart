@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:travel_journal/pages/login_page.dart';
+import 'package:travel_journal/pages/auth/login_page.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});

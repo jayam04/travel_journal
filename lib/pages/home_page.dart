@@ -1,22 +1,40 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_journal/entries_page.dart';
-import 'package:travel_journal/journals_page.dart';
-import 'package:travel_journal/settings_page.dart';
+import 'package:travel_journal/provider/models.dart';
+import 'package:travel_journal/pages/entries_page.dart';
+import 'package:travel_journal/pages/entry_modify_screen.dart';
+import 'package:travel_journal/pages/journals_page.dart';
+import 'package:travel_journal/pages/settings_page.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key, required this.title});
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
   int currentPageIndex = 0;
 
   void handleClick() {
     // TODO: Handle click
+    if (currentPageIndex == 0) {
+        final newEntry = JournalEntry(
+          id: "TEMPX", // Generate a new unique ID
+          journalId: "XX",
+          description: "",
+          title: "New Entry",
+          content: '',
+          date: DateTime.now(),
+          timestamp: Timestamp.fromDate(DateTime.now()),
+        );
+
+        Navigator.push(context, MaterialPageRoute(builder: (_) => JournalEntryScreen(entry: newEntry, isNewEntry: true)));
+        print("Add Entry Clicked");
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     // Handle navigation
@@ -26,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
         page = const EntriesPage();
         break;
       case 1:
-        page = const JournalsPage();
+        page = JournalsPage();
         break;
       case 2:
         page = const SettingsPage();

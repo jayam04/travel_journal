@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:travel_journal/home_page.dart';
+import 'package:travel_journal/pages/auth/login_page.dart';
+import 'package:travel_journal/pages/auth/signup_page.dart';
+import 'package:travel_journal/pages/home_page.dart';
 import 'package:travel_journal/provider/auth_provider.dart';
 import 'package:travel_journal/provider/firebase_service.dart';
 
@@ -28,7 +30,11 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           fontFamily: 'Bricolage Grotesque',
         ),
-        home: const MyHomePage(title: 'Journals'),
+        home: const HomePage(title: 'Journals'),
+        routes: <String, WidgetBuilder>{
+          '/auth/login': (BuildContext context) => LoginPage(),
+          '/auth/signup': (BuildContext context) => SignUpPage(),
+        },
       ),
     );
   }
