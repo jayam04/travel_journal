@@ -25,7 +25,7 @@ class EntryViewerScreen extends StatelessWidget {
               ),
               SizedBox(height: 16.0),
               Text(
-                'Date: ${entry.date.toLocal()}',
+                'Date: ${entry.timestamp.toDate().toLocal()}',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               SizedBox(height: 16.0),
@@ -46,16 +46,11 @@ class EntryViewerScreen extends StatelessWidget {
                   }).toList(),
                 ),
               SizedBox(height: 16.0),
-              if (entry.description != null)
+              if (entry.content.isNotEmpty)
                 MarkdownBody(
-                  data: entry.description!,
+                  data: entry.content,
                   styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)),
                 ),
-              SizedBox(height: 16.0),
-              Text(
-                entry.content,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
             ],
           ),
         ),

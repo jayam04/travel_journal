@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../provider/auth_provider.dart';
 
-class SignUpPage extends StatelessWidget {
+class SignUpScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  SignUpPage({super.key});
+  SignUpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

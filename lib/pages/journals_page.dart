@@ -17,6 +17,12 @@ class _JournalsPageState extends State<JournalsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        tooltip: 'Add Entry',
+        icon: const Icon(Icons.add),
+        label: const Text("Journal"),
+      ),
       appBar: AppBar(
         title: const Text('Journals'),
         bottom: PreferredSize(
@@ -25,7 +31,7 @@ class _JournalsPageState extends State<JournalsPage> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: _searchController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Search journals...',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.search),

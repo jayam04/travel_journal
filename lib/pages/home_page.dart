@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_journal/provider/models.dart';
 import 'package:travel_journal/pages/entries_page.dart';
-import 'package:travel_journal/pages/entry_modify_screen.dart';
+import 'package:travel_journal/pages/entry_editor_screen.dart';
 import 'package:travel_journal/pages/journals_page.dart';
 import 'package:travel_journal/pages/settings_page.dart';
 
@@ -20,17 +20,6 @@ class _HomePageState extends State<HomePage> {
   void handleClick() {
     // TODO: Handle click
     if (currentPageIndex == 0) {
-        final newEntry = JournalEntry(
-          id: "TEMPX", // Generate a new unique ID
-          journalId: "XX",
-          description: "",
-          title: "New Entry",
-          content: '',
-          date: DateTime.now(),
-          timestamp: Timestamp.fromDate(DateTime.now()),
-        );
-
-        Navigator.push(context, MaterialPageRoute(builder: (_) => JournalEntryScreen(entry: newEntry, isNewEntry: true)));
         print("Add Entry Clicked");
     }
   }
@@ -61,11 +50,6 @@ class _HomePageState extends State<HomePage> {
       // ),
       body: Center(
         child: page,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: handleClick,
-        tooltip: currentPageIndex == 0 ? 'Add Entry' : 'Add Journal',
-        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {

@@ -1,19 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class User {
-  String uid;
-  String email;
-  String name;
-  String? profilePicture;
-
-  User({
-    required this.uid,
-    required this.email,
-    required this.name,
-    this.profilePicture,
-  });
-}
-
 class Journal {
   String id;
   String title;
@@ -58,9 +44,7 @@ class JournalEntry {
   String title;
   String journalId;
   String content;
-  String description;
   Timestamp timestamp;
-  DateTime date;
   List<String>? photos;
   GeoPoint? location;
 
@@ -69,8 +53,6 @@ class JournalEntry {
     required this.title,
     required this.journalId,
     required this.content,
-    required this.description,
-    required this.date,
     required this.timestamp,
     this.photos,
     this.location,
@@ -84,8 +66,6 @@ class JournalEntry {
       title: data['title'] ?? 'Kuch to Kar lo',
       journalId: data['journalId'] ?? '',
       content: data['content'] ?? '',
-      description: data['description'] ?? '',
-      date: DateTime.now(),
       photos: List<String>.from(data['photos'] ?? []),
       location: data['location'] as GeoPoint?,
       timestamp: Timestamp.now(),
@@ -95,9 +75,10 @@ class JournalEntry {
   // Method to convert JournalEntry to a Map for Firestore
   Map<String, dynamic> toMap() {
     return {
+      'title': title,
       'journalId': journalId,
       'content': content,
-      'date': date,
+      'timestamp': timestamp,
       'photos': photos,
       'location': location,
     };

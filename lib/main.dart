@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:travel_journal/pages/auth/login_page.dart';
-import 'package:travel_journal/pages/auth/signup_page.dart';
+import 'package:travel_journal/pages/auth/login_screen.dart';
+import 'package:travel_journal/pages/auth/signup_screen.dart';
 import 'package:travel_journal/pages/home_page.dart';
 import 'package:travel_journal/provider/auth_provider.dart';
 import 'package:travel_journal/provider/firebase_service.dart';
+import 'package:travel_journal/provider/view_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ViewProvider()),
       ],
       child: MaterialApp(
         title: 'Travel Journal',
@@ -32,8 +34,8 @@ class MyApp extends StatelessWidget {
         ),
         home: const HomePage(title: 'Journals'),
         routes: <String, WidgetBuilder>{
-          '/auth/login': (BuildContext context) => LoginPage(),
-          '/auth/signup': (BuildContext context) => SignUpPage(),
+          '/auth/login': (BuildContext context) => LoginScreen(),
+          '/auth/signup': (BuildContext context) => SignUpScreen(),
         },
       ),
     );

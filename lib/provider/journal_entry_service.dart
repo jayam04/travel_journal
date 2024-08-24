@@ -3,7 +3,7 @@ import 'package:travel_journal/provider/models.dart';
 
 class JournalEntryService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  
+
   // Redundent code to be removed
   Stream<List<JournalEntry>> fetchStream(String userId) {
     var ref = FirebaseFirestore.instance
@@ -31,18 +31,19 @@ class JournalEntryService {
     });
   }
 
-  Future<void> addJournalEntry(JournalEntry entry) async {
-    await FirebaseFirestore.instance
+  Future<String> addJournalEntry(String userId, JournalEntry entry) async {
+    DocumentReference docRef = await FirebaseFirestore.instance
         .collection('users')
-        .doc('guest')
+        .doc(userId)
         .collection('entries')
         .add(entry.toMap());
+    return docRef.id;
   }
 
-  Future<void> updateJournalEntry(JournalEntry entry) async {
+  Future<void> updateJournalEntry(String userId, JournalEntry entry) async {
     await FirebaseFirestore.instance
         .collection('users')
-        .doc('guest')
+        .doc(userId)
         .collection('entries')
         .doc(entry.id)
         .update(entry.toMap());
