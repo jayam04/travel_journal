@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_journal/provider/auth_provider.dart';
 import 'package:travel_journal/provider/encapsulation.dart';
@@ -23,6 +27,27 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
   late String _journal;
   late String _content;
   String? _location;
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<void> _requestPermission(Permission permission) async {
+    final status = await permission.request();
+    if (status.isDenied || status.isPermanentlyDenied) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Permission denied. Please enable it in settings.')),
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -95,11 +120,58 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
                 onSaved: (value) => _journal = value!,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your journal content';
+                    return 'Please select a journal';
                   }
                   return null;
                 },
               ),
+              const SizedBox(height: 8),
+              Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: _pickLocation,
+                    child: const Text('Pick Location'),
+                  ),
+                  // const SizedBox(width: 16),
+                  if (_location != null)
+                    Text('Location: $_location',
+                        style: const TextStyle(fontSize: 14)),
+                ],
+              ),
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  if (_selectedImage != null)
+                    Image.file(
+                      _selectedImage!,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  Spacer(),
+                  IconButton(
+                    icon: Icon(Icons.photo_library),
+                    onPressed: () async {
+                      await _requestPermission(Permission.photos);
+                      _pickImage(ImageSource.gallery);
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.camera_alt),
+                    onPressed: () async {
+                      await _requestPermission(Permission.camera);
+                      _pickImage(ImageSource.camera);
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.file_upload),
+                    onPressed: () async {
+                      // Handle file picker if you want to allow file uploads
+                    },
+                  ),
+                ],
+              ),
+
               const SizedBox(height: 8),
               Expanded(
                 child: TextFormField(
@@ -117,19 +189,6 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
                   expands:
                       true, // Allows the TextFormField to take up remaining space
                 ),
-              ),
-              const SizedBox(height: 8),
-              Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: _pickLocation,
-                    child: const Text('Pick Location'),
-                  ),
-                  // const SizedBox(width: 16),
-                  if (_location != null)
-                    Text('Location: $_location',
-                        style: const TextStyle(fontSize: 14)),
-                ],
               ),
             ],
           ),
