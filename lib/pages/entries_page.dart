@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_journal/components/list_item.dart';
+import 'package:travel_journal/helper.dart';
 import 'package:travel_journal/pages/entry_editor_screen.dart';
 import 'package:travel_journal/pages/entry_viewer_screen.dart';
 import 'package:travel_journal/provider/encapsulation.dart';
@@ -9,10 +10,10 @@ import 'package:travel_journal/provider/models.dart';
 import 'package:travel_journal/provider/auth_provider.dart';
 import 'package:travel_journal/provider/journal_entry_service.dart';
 import 'package:intl/intl.dart';
-import 'package:travel_journal/provider/view_provider.dart';
+import 'package:travel_journal/provider/view_providers/entries_page.dart';
 
 class EntriesPage extends StatefulWidget {
-  const EntriesPage({Key? key}) : super(key: key);
+  const EntriesPage({super.key});
 
   @override
   State<EntriesPage> createState() => _EntriesPageState();
@@ -23,6 +24,7 @@ class _EntriesPageState extends State<EntriesPage> {
   final ScrollController _scrollController = ScrollController();
   bool _showSearchBar = false;
   String _searchQuery = '';
+  // TODO: convert it to use Journals as Chips or maybe tags
   List<String> _selectedChips = [];
 
   final List<String> _availableChips = ['Travel', 'Food', 'Adventure', 'Work'];
@@ -51,12 +53,12 @@ class _EntriesPageState extends State<EntriesPage> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final String user = "${authProvider.user}Hello";
     ViewProvider viewProvider = Provider.of<ViewProvider>(context);
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
+          // TODO: remove this requirement of temp jouranl
           final newEntry = JournalEntry(
             id: "TEMPX", // Generate a new unique ID
             journalId: '',
@@ -77,6 +79,7 @@ class _EntriesPageState extends State<EntriesPage> {
         label: const Text("Entry"),
       ),
       appBar: AppBar(
+        // TODO: Fix search bar not working
         title: _showSearchBar
             ? TextField(
                 decoration: const InputDecoration(
@@ -116,11 +119,11 @@ class _EntriesPageState extends State<EntriesPage> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 List<JournalEntry>? entries = snapshot.data;
                 if (entries == null || entries.isEmpty) {
-                  return Center(child: Text('No entries found'));
+                  return const Center(child: Text('No entries found'));
                 }
 
                 // Filter entries based on selected chips
@@ -221,13 +224,14 @@ class _EntriesPageState extends State<EntriesPage> {
 
   Widget _buildGalleryView(List<JournalEntry> entries) {
     return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 1,
+        childAspectRatio: 5 / 7,
       ),
       itemCount: entries.length,
       itemBuilder: (context, index) {
         JournalEntry entry = entries[index];
+
         return GestureDetector(
             onTap: () {
               Navigator.push(
@@ -240,9 +244,11 @@ class _EntriesPageState extends State<EntriesPage> {
             child: CustomCard(
               title: entry.title,
               content: entry.content,
-              location: entry.location.toString(),
+              location:
+                  '${entry.location?.latitude}, ${entry.location?.longitude}',
               imageUrl:
-                  "https://avatars.githubusercontent.com/u/93824505?v=4", // TODO: Fix this
+                  // TODO: Fix this
+                  "https://avatars.githubusercontent.com/u/93824505?v=4",
               onTap: () {
                 Navigator.push(
                   context,

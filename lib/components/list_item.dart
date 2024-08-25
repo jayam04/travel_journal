@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class CustomCard extends StatelessWidget {
   final String title;
@@ -43,14 +44,17 @@ class CustomCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  const SizedBox(height: 8.0),
-                  Text(
-                    content,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 8.0),
+                  const SizedBox(height: 2),
+                  MarkdownBody(
+                  data: content,
+                  // styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)),
+                  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+                    h1: Theme.of(context).textTheme.titleSmall,
+                  )
+                ),
+                  const SizedBox(height: 2),
                   Text(
                     location,
                     style: Theme.of(context).textTheme.bodySmall,

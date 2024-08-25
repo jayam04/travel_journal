@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../provider/auth_provider.dart';
 
 class SignUpScreen extends StatelessWidget {
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -19,6 +20,11 @@ class SignUpScreen extends StatelessWidget {
         child: Column(
           children: [
             TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Name',
+                )),
+            TextField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),
             ),
@@ -30,10 +36,11 @@ class SignUpScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
+                String name = _nameController.text.trim();
                 String email = _emailController.text.trim();
                 String password = _passwordController.text.trim();
                 await Provider.of<AuthProvider>(context, listen: false)
-                    .signUp(email, password);
+                    .signUp(email, password, name);
                 Navigator.of(context).pop(); // Go back to login screen
               },
               child: const Text('Sign Up'),
