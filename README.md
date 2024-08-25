@@ -27,6 +27,13 @@ This app will be maintained (new  features, bug fixes, etc.) until 26th of Augus
 
 [Check here for issue tracking](https://github.com/jayam04/travel-journal/issues/1)  
 
+## Library
+<img src="https://github.com/user-attachments/assets/6a4f2191-d342-4518-9e8c-fe34fab891ad" width="300"></img>
+<img src="https://github.com/user-attachments/assets/c3af9584-33d2-4f6c-9d58-c556f6185961" width="300"></img>
+<img src="https://github.com/user-attachments/assets/32d51281-4508-417c-a0fa-b094cdf9379c" width="300"></img>
+<img src="https://github.com/user-attachments/assets/238e62df-8f46-4ea4-9024-1acaf6b42921" width="300"></img>
+<img src="https://github.com/user-attachments/assets/b75b8f7e-a393-417d-8748-0d1518c52fa4" width="300"></img>
+
 ## Contributing
 
 Contributions are welcome! If you find a bug or have a feature request, please open an issue or submit a pull request.
