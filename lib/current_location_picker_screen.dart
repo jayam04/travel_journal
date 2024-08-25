@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoding/geocoding.dart' as geo;
+import 'package:location/location.dart' as loc;
 
 class CurrentLocationPickerScreen extends StatefulWidget {
   const CurrentLocationPickerScreen({Key? key}) : super(key: key);
 
   @override
-  _CurrentLocationPickerScreenState createState() => _CurrentLocationPickerScreenState();
+  _CurrentLocationPickerScreenState createState() =>
+      _CurrentLocationPickerScreenState();
 }
 
-class _CurrentLocationPickerScreenState extends State<CurrentLocationPickerScreen> {
-  LocationData? _currentLocation;
+class _CurrentLocationPickerScreenState
+    extends State<CurrentLocationPickerScreen> {
+  loc.LocationData? _currentLocation;
   bool _isFetchingLocation = false;
+  LatLng? _pickedLocation;
+  GoogleMapController? _mapController;
+  TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -23,9 +30,9 @@ class _CurrentLocationPickerScreenState extends State<CurrentLocationPickerScree
       _isFetchingLocation = true;
     });
 
-    final location = Location();
+    final location = loc.Location();
     bool serviceEnabled;
-    PermissionStatus permissionGranted;
+    loc.PermissionStatus permissionGranted;
 
     // Check if location services are enabled
     serviceEnabled = await location.serviceEnabled();
@@ -41,9 +48,9 @@ class _CurrentLocationPickerScreenState extends State<CurrentLocationPickerScree
 
     // Check for location permission
     permissionGranted = await location.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
+    if (permissionGranted == loc.PermissionStatus.denied) {
       permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
+      if (permissionGranted != loc.PermissionStatus.granted) {
         setState(() {
           _isFetchingLocation = false;
         });
@@ -56,16 +63,41 @@ class _CurrentLocationPickerScreenState extends State<CurrentLocationPickerScree
 
     setState(() {
       _currentLocation = locationData;
+      _pickedLocation = LatLng(
+        locationData.latitude!,
+        locationData.longitude!,
+      );
       _isFetchingLocation = false;
     });
   }
 
   void _confirmLocation() {
-    if (_currentLocation != null) {
-      Navigator.pop(context, _currentLocation);
+    if (_pickedLocation != null) {
+      Navigator.pop(context, _pickedLocation);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to get location.')),
+        SnackBar(content: Text('Please select a location.')),
+      );
+    }
+  }
+
+  Future<void> _searchLocation(String query) async {
+    try {
+      List<geo.Location> locations = await geo.locationFromAddress(query);
+      if (locations.isNotEmpty) {
+        final location = locations.first;
+        _mapController?.animateCamera(
+          CameraUpdate.newLatLng(
+            LatLng(location.latitude, location.longitude),
+          ),
+        );
+        setState(() {
+          _pickedLocation = LatLng(location.latitude, location.longitude);
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Location not found.')),
       );
     }
   }
@@ -74,7 +106,7 @@ class _CurrentLocationPickerScreenState extends State<CurrentLocationPickerScree
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Current Location'),
+        title: Text('Pick a Location'),
         actions: [
           IconButton(
             icon: Icon(Icons.check),
@@ -82,13 +114,54 @@ class _CurrentLocationPickerScreenState extends State<CurrentLocationPickerScree
           ),
         ],
       ),
-      body: Center(
-        child: _isFetchingLocation
-            ? CircularProgressIndicator()
-            : _currentLocation != null
-                ? Text('Location: ${_currentLocation!.latitude}, ${_currentLocation!.longitude}')
-                : Text('Failed to get location'),
-      ),
+      body: _isFetchingLocation
+          ? Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      labelText: 'Search Location',
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.search),
+                        onPressed: () {
+                          _searchLocation(_searchController.text);
+                        },
+                      ),
+                    ),
+                    onSubmitted: (value) {
+                      _searchLocation(value);
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: _pickedLocation ?? LatLng(0, 0),
+                      zoom: 15,
+                    ),
+                    onMapCreated: (controller) {
+                      _mapController = controller;
+                    },
+                    markers: _pickedLocation != null
+                        ? {
+                            Marker(
+                              markerId: MarkerId('picked-location'),
+                              position: _pickedLocation!,
+                            ),
+                          }
+                        : {},
+                    onTap: (location) {
+                      setState(() {
+                        _pickedLocation = location;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }

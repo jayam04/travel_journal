@@ -45,7 +45,7 @@ class JournalEntry {
   String journalId;
   String content;
   Timestamp timestamp;
-  List<String>? photos;
+  List<String> photos = [];
   GeoPoint? location;
 
   JournalEntry({
@@ -54,7 +54,7 @@ class JournalEntry {
     required this.journalId,
     required this.content,
     required this.timestamp,
-    this.photos,
+    required this.photos,
     this.location,
   });
 
@@ -68,7 +68,7 @@ class JournalEntry {
       content: data['content'] ?? '',
       photos: List<String>.from(data['photos'] ?? []),
       location: data['location'] as GeoPoint?,
-      timestamp: Timestamp.now(),
+      timestamp: data['timestamp'] != null ? data['timestamp'] as Timestamp : Timestamp.now(),
     );
   }
 

@@ -2,13 +2,16 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:travel_journal/current_location_picker_screen.dart';
 import 'package:travel_journal/provider/auth_provider.dart';
 import 'package:travel_journal/provider/encapsulation.dart';
 import 'package:travel_journal/provider/models.dart';
-import 'package:location/location.dart'; // Add this dependency for location picking
+import 'package:location/location.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class JournalEntryScreen extends StatefulWidget {
   final JournalEntry entry;
@@ -27,14 +30,16 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
   late String _journal;
   late String _content;
   String? _location;
-  File? _selectedImage;
+  List<File> _selectedImages = [];
   final ImagePicker _picker = ImagePicker();
+  bool _isLoading = false;
 
-  Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null) {
+  Future<void> _pickImages(ImageSource source) async {
+    final pickedFiles = await _picker.pickMultiImage();
+    if (pickedFiles.isNotEmpty) {
       setState(() {
-        _selectedImage = File(pickedFile.path);
+        _selectedImages =
+            pickedFiles.map((pickedFile) => File(pickedFile.path)).toList();
       });
     }
   }
@@ -49,15 +54,6 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _title = widget.entry.title ?? '';
-    _journal = widget.entry.content;
-    _content = widget.entry.content;
-    _location = widget.entry.location.toString();
-  }
-
   Future<void> _pickLocation() async {
     final locationData = await Location().getLocation();
     if (locationData != null) {
@@ -67,30 +63,71 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
     }
   }
 
+  Future<void> _uploadImages() async {
+    for (var image in _selectedImages) {
+      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('journal_entries/${widget.entry.id}/$fileName');
+
+      await storageRef.putFile(image);
+      final downloadUrl = await storageRef.getDownloadURL();
+
+      // Save the download URL to the entry or elsewhere as needed
+      widget.entry.photos?.add(downloadUrl);
+    }
+  }
+
   void _saveEntry() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      if (_selectedImages.isNotEmpty) {
+        await _uploadImages();
+      }
+
       widget.entry.title = _title;
       widget.entry.journalId = _journal;
       widget.entry.content = _content;
-      widget.entry.location = GeoPoint(0, 0);
+      widget.entry.location =
+          GeoPoint(0, 0); // Update this with actual location
 
       await DatabaseEncapsulation.addOrUpdateJournalEntry(
           Provider.of<AuthProvider>(context, listen: false).user, widget.entry);
+
+      setState(() {
+        _isLoading = false;
+      });
 
       Navigator.pop(context); // Go back after saving
     }
   }
 
   @override
+  void initState() {
+    super.initState();
+    _title = widget.entry.title ?? '';
+    _journal = widget.entry.content;
+    _content = widget.entry.content;
+    _location = widget.entry.location.toString();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _pickLocation();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.isNewEntry ? 'New Entry' : widget.entry.title),
         actions: [
           IconButton(
-            icon: Icon(Icons.save),
-            onPressed: _saveEntry,
+            icon: _isLoading
+                ? CircularProgressIndicator(color: Colors.white)
+                : Icon(Icons.save),
+            onPressed: _isLoading ? null : _saveEntry,
           ),
         ],
       ),
@@ -98,83 +135,94 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
         padding: EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title
-              TextFormField(
-                initialValue: _title,
-                decoration: const InputDecoration(labelText: 'Title'),
-                onSaved: (value) => _title = value!,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                initialValue: _journal,
-                decoration: const InputDecoration(labelText: 'Journal'),
-                onSaved: (value) => _journal = value!,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select a journal';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 8),
-              Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: _pickLocation,
-                    child: const Text('Pick Location'),
-                  ),
-                  // const SizedBox(width: 16),
-                  if (_location != null)
-                    Text('Location: $_location',
-                        style: const TextStyle(fontSize: 14)),
-                ],
-              ),
-              SizedBox(height: 8),
-              Row(
-                children: [
-                  if (_selectedImage != null)
-                    Image.file(
-                      _selectedImage!,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title
+                TextFormField(
+                  initialValue: _title,
+                  decoration: const InputDecoration(labelText: 'Title'),
+                  onSaved: (value) => _title = value!,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a title';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  initialValue: _journal,
+                  decoration: const InputDecoration(labelText: 'Journal'),
+                  onSaved: (value) => _journal = value!,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select a journal';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 8),
+                Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const CurrentLocationPickerScreen(),
+                          ),
+                        );
+
+                        if (result != null && result is LatLng) {
+                          setState(() {
+                            _location =
+                                '${result.latitude}, ${result.longitude}';
+                          });
+                        }
+                      },
+                      child: const Text('Pick Location'),
+                    ),
+                    if (_location != null)
+                      Text('Location: $_location',
+                          style: const TextStyle(fontSize: 14)),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _selectedImages.map((image) {
+                    return Image.file(
+                      image,
                       width: 100,
                       height: 100,
                       fit: BoxFit.cover,
+                    );
+                  }).toList(),
+                ),
+                Row(
+                  children: [
+                    Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.photo_library),
+                      onPressed: () async {
+                        await _requestPermission(Permission.photos);
+                        _pickImages(ImageSource.gallery);
+                      },
                     ),
-                  Spacer(),
-                  IconButton(
-                    icon: Icon(Icons.photo_library),
-                    onPressed: () async {
-                      await _requestPermission(Permission.photos);
-                      _pickImage(ImageSource.gallery);
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.camera_alt),
-                    onPressed: () async {
-                      await _requestPermission(Permission.camera);
-                      _pickImage(ImageSource.camera);
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.file_upload),
-                    onPressed: () async {
-                      // Handle file picker if you want to allow file uploads
-                    },
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 8),
-              Expanded(
-                child: TextFormField(
+                    IconButton(
+                      icon: Icon(Icons.camera_alt),
+                      onPressed: () async {
+                        await _requestPermission(Permission.camera);
+                        _pickImages(ImageSource.camera);
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
                   initialValue: _content,
                   decoration: const InputDecoration(
                       labelText: 'Description (Markdown Supported)'),
@@ -186,11 +234,10 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
                     return null;
                   },
                   maxLines: null,
-                  expands:
-                      true, // Allows the TextFormField to take up remaining space
+                  expands: false,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

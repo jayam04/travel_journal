@@ -59,10 +59,11 @@ class _EntriesPageState extends State<EntriesPage> {
         onPressed: () {
           final newEntry = JournalEntry(
             id: "TEMPX", // Generate a new unique ID
-            journalId: "XX",
-            title: "New Entry",
+            journalId: '',
+            title: '',
             content: '',
             timestamp: Timestamp.now(),
+            photos: [],
           );
 
           Navigator.push(

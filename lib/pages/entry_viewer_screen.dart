@@ -35,6 +35,12 @@ class EntryViewerScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               SizedBox(height: 16.0),
+              if (entry.content.isNotEmpty)
+                MarkdownBody(
+                  data: entry.content,
+                  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)),
+                ),
+              SizedBox(height: 16.0),
               if (entry.photos != null && entry.photos!.isNotEmpty)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,12 +50,6 @@ class EntryViewerScreen extends StatelessWidget {
                       child: Image.network(photoUrl),
                     );
                   }).toList(),
-                ),
-              SizedBox(height: 16.0),
-              if (entry.content.isNotEmpty)
-                MarkdownBody(
-                  data: entry.content,
-                  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)),
                 ),
             ],
           ),
