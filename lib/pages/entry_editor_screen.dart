@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_journal/current_location_picker_screen.dart';
@@ -118,7 +118,9 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _pickLocation();
+    if (_location == null) {
+      _pickLocation();
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.isNewEntry ? 'New Entry' : widget.entry.title),
@@ -168,17 +170,15 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
                   children: [
                     ElevatedButton(
                       onPressed: () async {
-                        final result = await Navigator.push(
+                        final LatLng? pickedLocation = await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const CurrentLocationPickerScreen(),
-                          ),
+                              builder: (_) => const LocationPickerScreen()),
                         );
-
-                        if (result != null && result is LatLng) {
+                        if (pickedLocation != null) {
                           setState(() {
                             _location =
-                                '${result.latitude}, ${result.longitude}';
+                                '${pickedLocation.latitude}, ${pickedLocation.longitude}';
                           });
                         }
                       },
