@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:travel_journal/provider/encapsulation.dart';
+import 'package:travel_journal/provider/database_handler.dart';
 import 'package:travel_journal/provider/models.dart';
 
 class JournalViewScreen extends StatefulWidget {
@@ -22,7 +22,7 @@ class JournalViewScreenState extends State<JournalViewScreen> {
     });
 
     log(widget.journal.id.toString());
-    await DatabaseEncapsulation.setDefaultJournal(widget.journal.id);
+    await DatabaseHandler.setDefaultJournal(widget.journal.id);
 
     setState(() {
       _isLoading = false;
@@ -56,7 +56,7 @@ class JournalViewScreenState extends State<JournalViewScreen> {
       setState(() {
         _isLoading = true;
       });
-      await DatabaseEncapsulation.deleteJournal(widget.journal.id);
+      await DatabaseHandler.deleteJournal(widget.journal.id);
       setState(() {
         _isLoading = false;
       });

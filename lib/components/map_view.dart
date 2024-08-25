@@ -5,7 +5,7 @@ import 'package:latlong2/latlong.dart';
 class MapView extends StatelessWidget {
   final LatLng location;
 
-  const MapView({Key? key, required this.location}) : super(key: key);
+  const MapView({super.key, required this.location});
 
   @override
   Widget build(BuildContext context) {

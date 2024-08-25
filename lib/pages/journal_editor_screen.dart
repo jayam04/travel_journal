@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:travel_journal/provider/encapsulation.dart';
+import 'package:travel_journal/provider/database_handler.dart';
 
 class JournalEditorScreen extends StatefulWidget {
   const JournalEditorScreen({super.key});
@@ -19,11 +19,11 @@ class _JournalEditorScreenState extends State<JournalEditorScreen> {
       _formKey.currentState!.save();
 
       // Save the journal to Firestore
-      String journalId = await DatabaseEncapsulation.addJournal(
-          _journalName, _journalDescription);
+      String journalId =
+          await DatabaseHandler.addJournal(_journalName, _journalDescription);
 
       if (_setAsDefault) {
-        await DatabaseEncapsulation.setDefaultJournal(journalId);
+        await DatabaseHandler.setDefaultJournal(journalId);
       }
 
       Navigator.pop(context); // Go back after saving

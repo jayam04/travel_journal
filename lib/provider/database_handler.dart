@@ -7,7 +7,7 @@ import 'package:travel_journal/provider/journal_entry_service.dart';
 import 'package:travel_journal/provider/journal_service.dart';
 import 'package:travel_journal/provider/user_service.dart';
 
-class DatabaseEncapsulation {
+class DatabaseHandler {
   static bool isFirebaseInitialized = false;
 
   static final UserService _userService = UserService();
@@ -50,7 +50,8 @@ class DatabaseEncapsulation {
 
   static Future<void> deleteJournal(String jouranlId) async {
     await initializeFirebase();
-    await _journalService.deleteJouranl(_auth.currentUser?.uid ?? "guest", jouranlId);
+    await _journalService.deleteJouranl(
+        _auth.currentUser?.uid ?? "guest", jouranlId);
   }
 
   static Future<void> setDefaultJournal(String journalId) async {

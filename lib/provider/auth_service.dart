@@ -38,16 +38,17 @@ class AuthService {
     }
   }
 
+  // Auth state changes
+  Stream<User?> get user {
+    return _auth.authStateChanges();
+  }
+
+  // User Informations
   Future<void> updateDisplayName(String name) async {
     try {
       await _auth.currentUser?.updateDisplayName(name);
     } catch (e) {
       log(e.toString());
     }
-  }
-
-  // Auth state changes
-  Stream<User?> get user {
-    return _auth.authStateChanges();
   }
 }

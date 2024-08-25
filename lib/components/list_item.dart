@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
-class CustomCard extends StatelessWidget {
+class ListItem extends StatelessWidget {
   final String title;
   final String content;
   final String location;
   final String imageUrl;
   final VoidCallback onTap;
 
-  const CustomCard({
+  const ListItem({
     super.key,
     required this.title,
     required this.content,
@@ -23,12 +23,14 @@ class CustomCard extends StatelessWidget {
       onTap: onTap,
       child: Card(
         margin: const EdgeInsets.all(8.0),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16.0)),
               child: AspectRatio(
                 aspectRatio: 16 / 9,
                 child: Image.network(
@@ -48,12 +50,13 @@ class CustomCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   MarkdownBody(
-                  data: content,
-                  // styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)),
-                  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
-                    h1: Theme.of(context).textTheme.titleSmall,
-                  )
-                ),
+                      data: content,
+                      // styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)),
+                      styleSheet:
+                          MarkdownStyleSheet.fromTheme(Theme.of(context))
+                              .copyWith(
+                        h1: Theme.of(context).textTheme.titleSmall,
+                      )),
                   const SizedBox(height: 2),
                   Text(
                     location,
