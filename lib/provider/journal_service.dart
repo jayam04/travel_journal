@@ -25,4 +25,15 @@ class JournalService {
     });
   }
 
+  Future<String> addJournal(String userId, Journal journal) async {
+    var ref = _db.collection('users').doc(userId).collection('journals');
+    DocumentReference documentReference = await ref.add(journal.toMap());
+
+    return documentReference.id;
+  }
+
+  Future<void> deleteJouranl(String userId, String journalId) async {
+    var ref = _db.collection('users').doc(userId).collection('journals');
+    await ref.doc(journalId).delete();
+  }
 }

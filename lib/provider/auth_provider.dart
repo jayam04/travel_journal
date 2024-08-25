@@ -27,9 +27,10 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> signUp(String email, String password) async {
+  Future<void> signUp(String email, String password, String name) async {
     try {
       _user = await _authService.signUp(email, password);
+      await _authService.updateDisplayName(name);
       notifyListeners();
     } catch (e) {
       log(e.toString());

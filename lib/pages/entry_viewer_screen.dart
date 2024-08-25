@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:travel_journal/components/map_view.dart';
 import 'package:travel_journal/provider/models.dart';
 
 class EntryViewerScreen extends StatelessWidget {
@@ -51,6 +53,10 @@ class EntryViewerScreen extends StatelessWidget {
                     );
                   }).toList(),
                 ),
+              if (entry.location != null)
+                MapView(
+                    location: LatLng(entry.location?.latitude ?? 0,
+                        entry.location?.longitude ?? 0)),
             ],
           ),
         ),

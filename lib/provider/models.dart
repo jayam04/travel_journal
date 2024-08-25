@@ -35,6 +35,7 @@ class Journal {
       'title': title,
       'userId': userId,
       'entries': entries?.map((entry) => entry.toMap()).toList(),
+      'description': description,
     };
   }
 }

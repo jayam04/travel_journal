@@ -29,7 +29,7 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
   late String _title;
   late String _journal;
   late String _content;
-  String? _location;
+  late GeoPoint? _location;
   List<File> _selectedImages = [];
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
@@ -48,7 +48,7 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
     final status = await permission.request();
     if (status.isDenied || status.isPermanentlyDenied) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text('Permission denied. Please enable it in settings.')),
       );
     }
@@ -56,9 +56,10 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
 
   Future<void> _pickLocation() async {
     final locationData = await Location().getLocation();
-    if (locationData != null) {
+    if (locationData.latitude != null && locationData.longitude != null) {
       setState(() {
-        _location = '${locationData.latitude}, ${locationData.longitude}';
+        _location =
+            GeoPoint(locationData.latitude ?? 0, locationData.longitude ?? 0);
       });
     }
   }
@@ -93,8 +94,7 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
       widget.entry.title = _title;
       widget.entry.journalId = _journal;
       widget.entry.content = _content;
-      widget.entry.location =
-          GeoPoint(0, 0); // Update this with actual location
+      widget.entry.location = _location;
 
       await DatabaseEncapsulation.addOrUpdateJournalEntry(
           Provider.of<AuthProvider>(context, listen: false).user, widget.entry);
@@ -110,10 +110,10 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
   @override
   void initState() {
     super.initState();
-    _title = widget.entry.title ?? '';
-    _journal = widget.entry.content;
-    _content = widget.entry.content;
-    _location = widget.entry.location.toString();
+    _title = '';
+    _journal = '';
+    _content = '';
+    _location = null;
   }
 
   @override
@@ -206,14 +206,14 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
                         if (pickedLocation != null) {
                           setState(() {
                             _location =
-                                '${pickedLocation.latitude}, ${pickedLocation.longitude}';
+                                GeoPoint(pickedLocation.latitude, pickedLocation.longitude);
                           });
                         }
                       },
                       child: const Text('Pick Location'),
                     ),
                     if (_location != null)
-                      Text('Location: $_location',
+                      Text('Location: ${_location?.latitude}, ${_location?.longitude}',
                           style: const TextStyle(fontSize: 14)),
                   ],
                 ),

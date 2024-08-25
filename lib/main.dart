@@ -5,7 +5,7 @@ import 'package:travel_journal/pages/auth/signup_screen.dart';
 import 'package:travel_journal/pages/home_page.dart';
 import 'package:travel_journal/provider/auth_provider.dart';
 import 'package:travel_journal/provider/firebase_service.dart';
-import 'package:travel_journal/provider/view_provider.dart';
+import 'package:travel_journal/provider/view_providers/entries_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
