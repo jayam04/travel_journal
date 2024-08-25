@@ -121,6 +121,8 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
     if (_location == null) {
       _pickLocation();
     }
+
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.isNewEntry ? 'New Entry' : widget.entry.title),
@@ -154,17 +156,43 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
                   },
                 ),
                 const SizedBox(height: 8),
-                TextFormField(
-                  initialValue: _journal,
-                  decoration: const InputDecoration(labelText: 'Journal'),
-                  onSaved: (value) => _journal = value!,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please select a journal';
+                FutureBuilder<Map<String, Journal>>(
+                  future:
+                      DatabaseEncapsulation.getJournalMap(authProvider.user),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Text('No journals available');
+                    } else {
+                      return DropdownButtonFormField<String>(
+                        value: _journal.isNotEmpty ? _journal : null,
+                        decoration: const InputDecoration(labelText: 'Journal'),
+                        items: snapshot.data!.entries.map((entry) {
+                          return DropdownMenuItem<String>(
+                            value: entry.key,
+                            child: Text(entry.value.title),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _journal = newValue!;
+                          });
+                        },
+                        onSaved: (value) => _journal = value!,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select a journal';
+                          }
+                          return null;
+                        },
+                      );
                     }
-                    return null;
                   },
                 ),
+
                 const SizedBox(height: 8),
                 Column(
                   children: [
