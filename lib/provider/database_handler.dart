@@ -83,7 +83,11 @@ class DatabaseHandler {
   }
 
   static Future<Map<String, Journal>> getJournalMap(User? user) {
+    log(user?.uid ?? 'guest', name: 'Encapsulation');
     return _journalService.fetchStream(user?.uid ?? 'guest').map((journalList) {
+      for (var journal in journalList) {
+        log(journal.id, name: "Encapsulation 89");
+      }
       return {
         for (var journal in journalList) journal.id: journal,
       };

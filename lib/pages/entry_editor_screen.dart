@@ -124,7 +124,6 @@ class JournalEntryScreenState extends State<JournalEntryScreen> {
       _pickLocation();
     }
 
-    AuthProvider authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.isNewEntry ? 'New Entry' : widget.entry.title),
@@ -159,7 +158,7 @@ class JournalEntryScreenState extends State<JournalEntryScreen> {
                 ),
                 const SizedBox(height: 8),
                 FutureBuilder<Map<String, Journal>>(
-                  future: DatabaseHandler.getJournalMap(authProvider.user),
+                  future: DatabaseHandler.getJournalMap(Provider.of<AuthProvider>(context, listen: true).user),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();

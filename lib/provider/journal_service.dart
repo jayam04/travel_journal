@@ -6,7 +6,7 @@ class JournalService {
 
   // Redundent
   Stream<List<Journal>> fetchStream(String userId) {
-    var ref = _db.collection('users').doc('guest').collection('journals');
+    var ref = _db.collection('users').doc(userId).collection('journals');
     return ref.snapshots().map((querySnapshot) {
       return querySnapshot.docs.map((docSnapshot) {
         return Journal.fromFirestore(docSnapshot);
