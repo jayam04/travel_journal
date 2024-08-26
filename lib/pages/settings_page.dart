@@ -3,9 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:travel_journal/pages/auth/login_screen.dart';
 import 'package:travel_journal/provider/auth_provider.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     bool isLoggedIn =

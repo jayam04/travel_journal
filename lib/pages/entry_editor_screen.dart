@@ -8,7 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_journal/current_location_picker_screen.dart';
 import 'package:travel_journal/provider/auth_provider.dart';
-import 'package:travel_journal/provider/encapsulation.dart';
+import 'package:travel_journal/provider/database_handler.dart';
 import 'package:travel_journal/provider/models.dart';
 import 'package:location/location.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -21,18 +21,20 @@ class JournalEntryScreen extends StatefulWidget {
       {super.key, required this.entry, this.isNewEntry = false});
 
   @override
-  _JournalEntryScreenState createState() => _JournalEntryScreenState();
+  JournalEntryScreenState createState() => JournalEntryScreenState();
 }
 
-class _JournalEntryScreenState extends State<JournalEntryScreen> {
+class JournalEntryScreenState extends State<JournalEntryScreen> {
+  bool _isLoading = false;
+
   final _formKey = GlobalKey<FormState>();
+  final ImagePicker _picker = ImagePicker();
+
   late String _title;
   late String _journal;
   late String _content;
   late GeoPoint? _location;
   List<File> _selectedImages = [];
-  final ImagePicker _picker = ImagePicker();
-  bool _isLoading = false;
 
   Future<void> _pickImages(ImageSource source) async {
     final pickedFiles = await _picker.pickMultiImage();
@@ -75,7 +77,7 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
       final downloadUrl = await storageRef.getDownloadURL();
 
       // Save the download URL to the entry or elsewhere as needed
-      widget.entry.photos?.add(downloadUrl);
+      widget.entry.photos.add(downloadUrl);
     }
   }
 
@@ -96,7 +98,7 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
       widget.entry.content = _content;
       widget.entry.location = _location;
 
-      await DatabaseEncapsulation.addOrUpdateJournalEntry(
+      await DatabaseHandler.addOrUpdateJournalEntry(
           Provider.of<AuthProvider>(context, listen: false).user, widget.entry);
 
       setState(() {
@@ -122,21 +124,20 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
       _pickLocation();
     }
 
-    AuthProvider authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.isNewEntry ? 'New Entry' : widget.entry.title),
         actions: [
           IconButton(
             icon: _isLoading
-                ? CircularProgressIndicator(color: Colors.white)
-                : Icon(Icons.save),
+                ? const CircularProgressIndicator(color: Colors.white)
+                : const Icon(Icons.save),
             onPressed: _isLoading ? null : _saveEntry,
           ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -157,15 +158,14 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
                 ),
                 const SizedBox(height: 8),
                 FutureBuilder<Map<String, Journal>>(
-                  future:
-                      DatabaseEncapsulation.getJournalMap(authProvider.user),
+                  future: DatabaseHandler.getJournalMap(Provider.of<AuthProvider>(context, listen: true).user),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Text('No journals available');
+                      return const Text('No journals available');
                     } else {
                       return DropdownButtonFormField<String>(
                         value: _journal.isNotEmpty ? _journal : null,
@@ -205,19 +205,20 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
                         );
                         if (pickedLocation != null) {
                           setState(() {
-                            _location =
-                                GeoPoint(pickedLocation.latitude, pickedLocation.longitude);
+                            _location = GeoPoint(pickedLocation.latitude,
+                                pickedLocation.longitude);
                           });
                         }
                       },
                       child: const Text('Pick Location'),
                     ),
                     if (_location != null)
-                      Text('Location: ${_location?.latitude}, ${_location?.longitude}',
+                      Text(
+                          'Location: ${_location?.latitude}, ${_location?.longitude}',
                           style: const TextStyle(fontSize: 14)),
                   ],
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -232,16 +233,16 @@ class _JournalEntryScreenState extends State<JournalEntryScreen> {
                 ),
                 Row(
                   children: [
-                    Spacer(),
+                    const Spacer(),
                     IconButton(
-                      icon: Icon(Icons.photo_library),
+                      icon: const Icon(Icons.photo_library),
                       onPressed: () async {
                         await _requestPermission(Permission.photos);
                         _pickImages(ImageSource.gallery);
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.camera_alt),
+                      icon: const Icon(Icons.camera_alt),
                       onPressed: () async {
                         await _requestPermission(Permission.camera);
                         _pickImages(ImageSource.camera);

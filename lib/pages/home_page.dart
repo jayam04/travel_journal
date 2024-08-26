@@ -1,8 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_journal/provider/models.dart';
 import 'package:travel_journal/pages/entries_page.dart';
-import 'package:travel_journal/pages/entry_editor_screen.dart';
 import 'package:travel_journal/pages/journals_page.dart';
 import 'package:travel_journal/pages/settings_page.dart';
 
@@ -44,10 +41,6 @@ class _HomePageState extends State<HomePage> {
 
     // Build the page
     return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      //   title: Text(widget.title),
-      // ),
       body: Center(
         child: page,
       ),

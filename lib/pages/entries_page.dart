@@ -2,10 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_journal/components/list_item.dart';
-import 'package:travel_journal/helper.dart';
 import 'package:travel_journal/pages/entry_editor_screen.dart';
 import 'package:travel_journal/pages/entry_viewer_screen.dart';
-import 'package:travel_journal/provider/encapsulation.dart';
+import 'package:travel_journal/provider/database_handler.dart';
 import 'package:travel_journal/provider/models.dart';
 import 'package:travel_journal/provider/auth_provider.dart';
 import 'package:travel_journal/provider/journal_entry_service.dart';
@@ -112,8 +111,8 @@ class _EntriesPageState extends State<EntriesPage> {
           _buildChips(),
           Expanded(
             child: StreamBuilder<List<JournalEntry>>(
-              stream: DatabaseEncapsulation.fetchJournalEntryStream(
-                  authProvider.user),
+              stream:
+                  DatabaseHandler.fetchJournalEntryStream(authProvider.user),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
@@ -241,7 +240,7 @@ class _EntriesPageState extends State<EntriesPage> {
                 ),
               );
             },
-            child: CustomCard(
+            child: ListItem(
               title: entry.title,
               content: entry.content,
               location:
